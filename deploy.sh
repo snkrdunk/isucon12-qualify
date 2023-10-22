@@ -15,7 +15,7 @@ git fetch origin $BRANCH
 git checkout $BRANCH
 
 # nginx
-cp ~/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+# cp ~/etc/nginx/nginx.conf /etc/nginx/nginx.conf
 # cp ./etc/nginx/sites-available/isucondition.conf /etc/nginx/sites-available/isucondition.conf
 
 sudo systemctl daemon-reload
