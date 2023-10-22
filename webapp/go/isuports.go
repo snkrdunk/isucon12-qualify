@@ -609,14 +609,14 @@ func billingReportByCompetitionV2(ctx context.Context, tenantDB dbOrTx, tenantID
 		comps[i] = *comp
 	}
 
-	query, args, err := sqlx.In("SELECT player_id, MIN(created_at) AS min_created_at, competition_id FROM visit_history WHERE tenant_id = ? AND competition_id IN (?)", tenantID, competitionIDs)
+	query, args, err := sqlx.In("SELECT player_id, created_at, competition_id FROM visit_history WHERE tenant_id = ? AND competition_id IN (?)", tenantID, competitionIDs)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieveCompetition: %w", err)
 	}
 
 	type VisitHistorySummaryRowV2 struct {
 		PlayerID      string `db:"player_id"`
-		MinCreatedAt  int64  `db:"min_created_at"`
+		CreatedAt     int64  `db:"created_at"`
 		CompetitionID string `db:"competition_id"`
 	}
 
@@ -639,16 +639,30 @@ func billingReportByCompetitionV2(ctx context.Context, tenantDB dbOrTx, tenantID
 
 	billingMapGroupByCompetitionID := map[string]map[string]string{}
 	for competitionID, vhs := range vhsGroupByCompetitionID {
+		billingMapGroupByPlayerID := map[string][]VisitHistorySummaryRowV2{}
 		for _, vh := range vhs {
-			for _, comp := range comps {
-				if comp.ID == vh.CompetitionID {
-					// competition.finished_atよりもあとの場合は、終了後に訪問したとみなして大会開催内アクセス済みとみなさない
-					if comp.FinishedAt.Valid && comp.FinishedAt.Int64 < vh.MinCreatedAt {
-						continue
-					}
-					billingMapGroupByCompetitionID[competitionID][vh.PlayerID] = "visitor"
+			billingMapGroupByPlayerID[vh.PlayerID] = append(billingMapGroupByPlayerID[vh.PlayerID], vh)
+		}
+
+		var comp CompetitionRow
+		for _, comp := range comps {
+			if comp.ID == competitionID {
+				comp = comp
+			}
+		}
+
+		for playerID, vhs := range billingMapGroupByPlayerID {
+			var minCreatedAt int64
+			for _, vh := range vhs {
+				if minCreatedAt > vh.CreatedAt {
+					minCreatedAt = vh.CreatedAt
 				}
 			}
+
+			if comp.FinishedAt.Valid && comp.FinishedAt.Int64 < minCreatedAt {
+				continue
+			}
+			billingMapGroupByCompetitionID[competitionID][playerID] = "visitor"
 		}
 	}
 
