@@ -220,3 +220,27 @@ Resources:
     Properties:
       Domain: vpc
       InstanceId: !Ref QualifyInstance3
+  BenchmarkerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-073140ad092048333
+      InstanceType: c5a.xlarge
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      SubnetId: !Ref Subnet
+      KeyName: !Ref MyKeyPair
+      PrivateIpAddress: "192.168.0.14"
+      IamInstanceProfile: !Ref InstanceProfile
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 20
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: isucon12-qualify-3
+  BenchmarkerInstanceIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref BenchmarkerInstance
