@@ -2,11 +2,9 @@
 
 set -eu
 
-APP_HOME=/home/isucon/webapp
-
 # log rotation
 sudo mv /var/log/nginx/access.log /var/log/nginx/access.log.`date +%Y%m%d%H%M%S`
-nginx -s reopen
+sudo nginx -s reopen
 cp /tmp/mysql-slow.log /var/log/mysql/slowquery.log.`date +%Y%m%d%H%M%S`
 sudo truncate -s 0 /tmp/mysql-slow.log
 
