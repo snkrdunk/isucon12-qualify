@@ -517,9 +517,8 @@ type VisitHistoryRow struct {
 }
 
 type VisitHistorySummaryRow struct {
-	PlayerID      string `db:"player_id"`
-	MinCreatedAt  int64  `db:"min_created_at"`
-	CompetitionID string `db:"competition_id"`
+	PlayerID     string `db:"player_id"`
+	MinCreatedAt int64  `db:"min_created_at"`
 }
 
 // 大会ごとの課金レポートを計算する
@@ -610,9 +609,15 @@ func billingReportByCompetitionV2(ctx context.Context, tenantDB dbOrTx, tenantID
 		return nil, fmt.Errorf("error retrieveCompetition: %w", err)
 	}
 
+	type VisitHistorySummaryRowV2 struct {
+		PlayerID      string `db:"player_id"`
+		MinCreatedAt  int64  `db:"min_created_at"`
+		CompetitionID string `db:"competition_id"`
+	}
+
 	// ランキングにアクセスした参加者のIDを取得する
 	// TODO: ComepetitionID追加したの問題ないか後で確認
-	vhs := []VisitHistorySummaryRow{}
+	vhs := []VisitHistorySummaryRowV2{}
 	if err := adminDB.SelectContext(
 		ctx,
 		&vhs,
@@ -622,7 +627,7 @@ func billingReportByCompetitionV2(ctx context.Context, tenantDB dbOrTx, tenantID
 		return nil, fmt.Errorf("error Select visit_history: tenantID=%d, competitionIDs=%s, %w", tenantID, competitionIDs, err)
 	}
 	// NOTE: competitionごとにグルーピング
-	vhsGroupByCompetitionID := make(map[string][]VisitHistorySummaryRow, len(competitionIDs))
+	vhsGroupByCompetitionID := make(map[string][]VisitHistorySummaryRowV2, len(competitionIDs))
 	for _, vh := range vhs {
 		vhsGroupByCompetitionID[vh.CompetitionID] = append(vhsGroupByCompetitionID[vh.CompetitionID], vh)
 	}
