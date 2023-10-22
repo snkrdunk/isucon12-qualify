@@ -5,10 +5,10 @@ set -eu
 APP_HOME=/home/isucon/webapp
 
 # log rotation
-mv /var/log/nginx/access.log /var/log/nginx/access.log.`date +%Y%m%d%H%M%S`
+sudo mv /var/log/nginx/access.log /var/log/nginx/access.log.`date +%Y%m%d%H%M%S`
 nginx -s reopen
 cp /tmp/mysql-slow.log /var/log/mysql/slowquery.log.`date +%Y%m%d%H%M%S`
-truncate -s 0 /tmp/mysql-slow.log
+sudo truncate -s 0 /tmp/mysql-slow.log
 
 BRANCH=${1:-main}
 git fetch origin $BRANCH
