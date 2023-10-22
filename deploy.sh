@@ -6,15 +6,12 @@ set -eu
 sudo mv /var/log/nginx/access.log /var/log/nginx/access.log.`date +%Y%m%d%H%M%S`
 sudo nginx -s reopen
 sudo cp /tmp/mysql-slow.log /var/log/mysql/slowquery.log.`date +%Y%m%d%H%M%S`
+# NOTE: chown root /tmp/mysql-slow.logしたら動いた
 sudo truncate -s 0 /tmp/mysql-slow.log
 
 BRANCH=${1:-main}
 git fetch origin $BRANCH
 git checkout $BRANCH
-
-# nginx
-# cp ~/etc/nginx/nginx.conf /etc/nginx/nginx.conf
-# cp ./etc/nginx/sites-available/isucondition.conf /etc/nginx/sites-available/isucondition.conf
 
 sudo systemctl daemon-reload
 sudo systemctl restart isuports.service
