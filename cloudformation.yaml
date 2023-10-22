@@ -238,7 +238,7 @@ Resources:
             VolumeType: gp3
       Tags:
         - Key: Name
-          Value: isucon12-qualify-3
+          Value: isucon12-benchmarker
   BenchmarkerInstanceIP:
     Type: AWS::EC2::EIP
     Properties:
