@@ -224,7 +224,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-073140ad092048333
-      InstanceType: c5a.xlarge
+      InstanceType: c5.xlarge
       SecurityGroupIds:
         - !Ref SecurityGroup
       SubnetId: !Ref Subnet
