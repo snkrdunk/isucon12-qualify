@@ -595,6 +595,11 @@ func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID i
 
 // NOTE: 改善した関数
 func billingReportByCompetitionV2(ctx context.Context, tenantDB dbOrTx, tenantID int64, competitionIDs []string) (*int64, error) {
+	if len(competitionIDs) == 0 {
+		billingYen := int64(0)
+		return &billingYen, nil
+	}
+
 	comps := make([]CompetitionRow, len(competitionIDs))
 	for i := range competitionIDs {
 		comp, err := retrieveCompetition(ctx, tenantDB, competitionIDs[i])
